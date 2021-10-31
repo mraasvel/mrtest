@@ -5,7 +5,7 @@ Simple C testing framework
 ## Example Usage
 
 ```
-TEST_CASE {
+TEST_CASE(test_tag) {
 	MRTEST(true);
 	MRTEST(false);
 }
