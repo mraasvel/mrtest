@@ -1,0 +1,28 @@
+-- TODO --
+
+- Macro to generate a function
+
+	Concept:
+
+		TEST_CASE("tag_function_name") {
+			assertions
+		}
+
+		Becomes:
+
+		void __tag_function_name(void) {
+			assertions
+		}
+
+		Problem: spaces in tag should be replaced with '_'
+
+- Main to execute all generated functions
+
+	HashTable[TagName] = Function;
+
+	for each argument:
+		Table[Argument]();
+	
+	if no arguments:
+		for each id:
+			iterator();
