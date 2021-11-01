@@ -1,5 +1,9 @@
 -- TODO --
 
+- Learn everything that's possible with macro's
+
+	https://gcc.gnu.org/onlinedocs/cpp/Concatenation.html#Concatenation
+
 - Macro to generate a function
 
 	Concept:

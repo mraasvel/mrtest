@@ -1,6 +1,9 @@
 #include "mrtest.h"
 
+// TEST_CASE("123") {
+
+// }
+
 int main(void) {
-	MR_ASSERT(0);
 	return 0;
 }
