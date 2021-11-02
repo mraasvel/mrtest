@@ -12,6 +12,9 @@ Simple prototype of void id(void)
 #define _MR_CONC_(x, y) _MR_CONC(x, y)
 
 /*
+Function body of the dynamic test function
+
+Will return the key and value of NAME and FUNCTION_POINTER
 */
 #define _MR_TEST_FUNCTION_BODY(name) \
 	do { \
