@@ -20,7 +20,7 @@ Will return the key and value of NAME and FUNCTION_POINTER
 	do { \
 		_MR_FunctionType x; \
 		x.id = strdup(_MR_STR(name)); \
-		x.function = name; \
+		x.function = (name); \
 		return x; \
 	} while (0);
 
@@ -31,7 +31,7 @@ Will return the key and value of NAME and FUNCTION_POINTER
 /*
 Generates the TEST_CASE(unique_id) {}
 
-1. prototype for main tester function so we can get a function pointer
+1. prototype for main tester function so we can get the function pointer
 2. prefunction with dynamic naming so we can get it with dlsym:
 	- Returns a pointer and identifier to the previous function (id)
 3. prototype for main tester function, the braces after define the body

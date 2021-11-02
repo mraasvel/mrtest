@@ -30,7 +30,7 @@ DEP := $(patsubst $(SDIR)/%.c,$(DDIR)/$(SUBDIR)%.d,$(SRC))
 # Compilation
 CC = gcc
 IFLAGS = -I$(IDIR)
-LFLAGS =
+LFLAGS = -ldl -rdynamic
 CFLAGS = -Wall -Wextra -Werror
 DFLAGS := -O0 -g3
 
