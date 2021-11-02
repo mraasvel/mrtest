@@ -4,6 +4,23 @@
 
 	https://gcc.gnu.org/onlinedocs/cpp/Concatenation.html#Concatenation
 
+	- TEST_CASE macro expansion implementation:
+
+		TEST_CASE("unique_id") {}
+
+		->
+
+		void unique_id(void);
+		void addUniqueIdToVector__COUNTER__(void) {}
+		void unique_id(void) {}
+	
+	- Vector implementation for tests
+	- Main function to execute all addUniqueIdToVector functions using `dlsym`
+	- Executing all functions in the FunctionVector
+
+	- HashTable to run specific functions through arguments
+	- HashTable of Vectors: running a "test-suite" instead of single test-cases
+
 - Macro to generate a function
 
 	Concept:
