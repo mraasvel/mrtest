@@ -3,26 +3,7 @@ Generating dynamic function names:
 	https://stackoverflow.com/questions/652815/has-anyone-ever-had-a-use-for-the-counter-pre-processor-macro
 	https://gcc.gnu.org/onlinedocs/cpp/Common-Predefined-Macros.html
 
-	__COUNTER__ macro
-
-
-	TEST_CASE(unique_id) {}
-
-	Expand:
-
-	void unique_id(void); // prototype for below
-
-	void _MR_add_entry __COUNTER__ (void) {
-		FunctionTable["unique_id"] = unique_id;
-	}
-
-	void unique_id(void) {
-		// tests
-	}
-
-	Problem: implicit declaration of function _MR_add_entry and unique_id function?
-	Solution: use dlsym
-	Problem: have to link with some flags (ldl, -rdynamic), so that the functions can be found
+	Problem: __COUNTER__ is per file, so dynamic naming doesn't work for different files
 
 Getting function pointer based on name:
 
