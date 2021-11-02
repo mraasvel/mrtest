@@ -6,7 +6,7 @@
 /* Colors */
 
 # define _MR_RED_BOLD		"\033[1;31m"
-# define _MR_GREEN_BOLD	"\033[1;32m"
+# define _MR_GREEN_BOLD		"\033[1;32m"
 # define _MR_RESET_COLOR	"\033[0m"
 
 /*

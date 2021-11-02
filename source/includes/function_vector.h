@@ -23,7 +23,6 @@ struct _MR_FunctionType {
 	_MR_TestCaseFunction function;
 };
 
-
 /*
 Basic vector implementation
 
@@ -55,7 +54,7 @@ Defined Public Functions
 
 _MR_FunctionVectorType* _MR_FunctionVectorConstructor(size_t initial_capacity);
 void _MR_FunctionVectorDestructor(_MR_FunctionVectorType* v);
-int _MR_FunctionVectorPushback(_MR_FunctionVectorType* v, _MR_FunctionType x);
+int _MR_FunctionVectorPushback(_MR_FunctionVectorType** v_ptr, _MR_FunctionType x);
 _MR_FunctionVectorIteratorType _MR_FunctionVectorGetIterator(_MR_FunctionVectorType* v);
 
 #endif /* FUNCTION_VECTOR_H */

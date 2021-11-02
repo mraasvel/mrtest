@@ -2,6 +2,7 @@
 #include <stdlib.h>
 #include <assert.h>
 #include <string.h>
+#include <stdio.h>
 
 _MR_FunctionVectorType* _MR_FunctionVectorConstructor(size_t initial_capacity) {
 
@@ -41,7 +42,7 @@ static int _MR_FunctionVectorEnsureCapacity(_MR_FunctionVectorType* v) {
 		if (new_table == NULL) {
 			return -1;
 		}
-		memcpy(new_table, v->table, v->size);
+		memcpy(new_table, v->table, v->size * sizeof(_MR_FunctionType));
 		v->capacity *= 2;
 		free(v->table);
 		v->table = new_table;
@@ -52,9 +53,18 @@ static int _MR_FunctionVectorEnsureCapacity(_MR_FunctionVectorType* v) {
 /*
 Return: -1 on malloc failure, 0 on success
 */
-int _MR_FunctionVectorPushback(_MR_FunctionVectorType* v, _MR_FunctionType x) {
+int _MR_FunctionVectorPushback(_MR_FunctionVectorType** v_ptr, _MR_FunctionType x) {
+	if (*v_ptr == NULL) {
+		*v_ptr = _MR_FunctionVectorConstructor(1);
+		if (*v_ptr == NULL) {
+			perror("malloc");
+			exit(EXIT_FAILURE);
+		}
+	}
+	_MR_FunctionVectorType* v = *v_ptr;
 	if (_MR_FunctionVectorEnsureCapacity(v) == -1) {
-		return -1;
+		perror("malloc");
+		exit(EXIT_FAILURE);
 	}
 	assert(v->size < v->capacity);
 	v->table[v->size++] = x;

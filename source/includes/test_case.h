@@ -6,7 +6,7 @@
 /*
 Simple prototype of void id(void)
 */
-#define _MR_FUNCTION(x) void x (void)
+#define _MR_FUNCTION(x) static void x (void)
 
 #define _MR_CONC(x, y) x##y
 #define _MR_CONC_(x, y) _MR_CONC(x, y)
@@ -21,11 +21,12 @@ Will return the key and value of NAME and FUNCTION_POINTER
 		_MR_FunctionType x; \
 		x.id = strdup(_MR_STR(name)); \
 		x.function = (name); \
-		return x; \
+		_MR_FunctionVectorPushback(&_MR_global_function_vector, x); \
 	} while (0);
 
-#define _MR_TEST_FUNCTION(id) \
-			_MR_FunctionType _MR_CONC_(_MR_TestFunction, __COUNTER__) (void) \
+#define _MR_TEST_FUNCTION(id, unique_name) \
+			static void unique_name (void) __attribute__ ((constructor)); \
+			static void unique_name (void) \
 			{ _MR_TEST_FUNCTION_BODY(id) }
 
 /*
@@ -38,7 +39,7 @@ Generates the TEST_CASE(unique_id) {}
 */
 #define _MR_TEST_CASE(id) \
 			_MR_FUNCTION(id); \
-			_MR_TEST_FUNCTION(id) \
+			_MR_TEST_FUNCTION(id, _MR_CONC_(_MR_TestFunction, __COUNTER__)) \
 			_MR_FUNCTION(id)
 
 #endif /* TEST_CASE_H */

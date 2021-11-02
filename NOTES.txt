@@ -8,3 +8,7 @@ Generating dynamic function names:
 Getting function pointer based on name:
 
 	https://man7.org/linux/man-pages/man3/dlsym.3.html
+
+Executing functions before the main executes:
+
+	https://www.geeksforgeeks.org/functions-that-are-executed-before-and-after-main-in-c/

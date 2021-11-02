@@ -1,7 +1,9 @@
 -- TODO --
 
-	- Find other way to implement TEST_CASE:
-		the dynamic function naming thing works for only one file
+	- Finish documentation on implementation
+	- Create single header/.c file with everything that's needed
+	- Create example tests with those
+	- README on usage
 
 	- HashTable to run specific functions through arguments
 	- HashTable of Vectors: running a "test-suite" instead of single test-cases
