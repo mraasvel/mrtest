@@ -4,18 +4,10 @@
 
 	https://gcc.gnu.org/onlinedocs/cpp/Concatenation.html#Concatenation
 
-	- TEST_CASE macro expansion implementation:
-
-		TEST_CASE("unique_id") {}
-
-		->
-
-		void unique_id(void);
-		void addUniqueIdToVector__COUNTER__(void) {}
-		void unique_id(void) {}
-	
 	- Vector implementation for tests
+	- addUniqueVector body implementation
 	- Main function to execute all addUniqueIdToVector functions using `dlsym`
+	- Main function can be in a header, behind a define `#ifdef MRTEST_MAIN`
 	- Executing all functions in the FunctionVector
 
 	- HashTable to run specific functions through arguments

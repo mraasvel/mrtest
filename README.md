@@ -5,11 +5,18 @@ Simple C testing framework
 ## Example Usage
 
 ```
-TEST_CASE(test_tag) {
+TEST_CASE(unique_test_identifier) {
 	MRTEST(true);
 	MRTEST(false);
 }
 ```
+---
+
+## Language
+
+Unique Test Identifier should be the same as a regular function name
+
+---
 
 ## Implementation
 
