@@ -1,5 +1,6 @@
 #define MRTEST_MAIN
 #include "mrtest.h"
+#include <stdlib.h>
 
 int Factorial(int n) {
 	if (n <= 1) {
@@ -16,4 +17,17 @@ TEST_CASE(ThisIsATest) {
 
 TEST_CASE(SecondTest) {
 	MRTEST(1 == 1);
+}
+
+TEST_CASE(atoi_tests) {
+	MRTEST(atoi("5") == 5);
+	MRTEST(atoi("5") == 4);
+	MRTEST(atoi("5") == 4);
+	MRTEST(atoi("5") == 4);
+	MRTEST(atoi("5") == 4);
+	MRTEST(atoi("5") == 4);
+}
+
+TEST_CASE(atoi_overflow) {
+	MRTEST(atoi("419823749812739487234") == 0);
 }
