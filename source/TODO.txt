@@ -1,0 +1,7 @@
+-- TODO --
+
+	- HashTable to run specific functions through arguments
+	- HashTable of Vectors: running a "test-suite" instead of single test-cases
+	- Forking or signal catching to handle crashes inside of testing suites
+	- Print out the function name in FAIL message:
+		using the macro __FUNCTION__ (or something like that)

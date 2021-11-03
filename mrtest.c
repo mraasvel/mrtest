@@ -1,8 +1,9 @@
-#include "function_vector.h"
+#include "mrtest.h"
 #include <stdlib.h>
 #include <assert.h>
-#include <string.h>
 #include <stdio.h>
+
+_MR_FunctionVectorType* _MR_global_function_vector = NULL;
 
 _MR_FunctionVectorType* _MR_FunctionVectorConstructor(size_t initial_capacity) {
 

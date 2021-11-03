@@ -1,5 +1,5 @@
-#ifndef FUNCTION_VECTOR_H
-# define FUNCTION_VECTOR_H
+#ifndef MR_FUNCTION_VECTOR_H
+# define MR_FUNCTION_VECTOR_H
 
 # include <stddef.h>
 
@@ -57,4 +57,4 @@ void _MR_FunctionVectorDestructor(_MR_FunctionVectorType* v);
 int _MR_FunctionVectorPushback(_MR_FunctionVectorType** v_ptr, _MR_FunctionType x);
 _MR_FunctionVectorIteratorType _MR_FunctionVectorGetIterator(_MR_FunctionVectorType* v);
 
-#endif /* FUNCTION_VECTOR_H */
+#endif /* MR_FUNCTION_VECTOR_H */

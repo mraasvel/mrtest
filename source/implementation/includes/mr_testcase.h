@@ -1,5 +1,5 @@
-#ifndef TEST_CASE_H
-# define TEST_CASE_H
+#ifndef MR_TESTCASE_H
+# define MR_TESTCASE_H
 
 #include "mrtest_internal.h"
 
@@ -42,4 +42,4 @@ Generates the TEST_CASE(unique_id) {}
 			_MR_TEST_FUNCTION(id, _MR_CONC_(_MR_TestFunction, __COUNTER__)) \
 			_MR_FUNCTION(id)
 
-#endif /* TEST_CASE_H */
+#endif /* MR_TESTCASE_H */

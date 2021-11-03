@@ -2,8 +2,8 @@
 # define MRTEST_H
 
 # include "mrtest_internal.h"
-# include "test_case.h"
-# include "function_vector.h"
+# include "mr_testcase.h"
+# include "mr_function_vector.h"
 # include <string.h> // Need strdup in copy function
 
 # define MRTEST(x) _MR_TEST(x)
