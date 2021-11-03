@@ -11,3 +11,7 @@ TEST_CASE(abcd) {
 	MRTEST(false);
 	MRTEST(f("abcde"));
 }
+
+TEST_CASE(asdjf) {
+	MRTEST(1 == 0);
+}

@@ -31,3 +31,7 @@ TEST_CASE(atoi_tests) {
 TEST_CASE(atoi_overflow) {
 	MRTEST(atoi("419823749812739487234") == 0);
 }
+
+TEST_CASE(new_tester) {
+	MRTEST(1 == 424827347);
+}

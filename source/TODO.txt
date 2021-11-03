@@ -5,3 +5,5 @@
 	- Forking or signal catching to handle crashes inside of testing suites
 	- Print out the function name in FAIL message:
 		using the macro __FUNCTION__ (or something like that)
+	
+	- Timeout functionality, add configuration option to timeout each testcase
