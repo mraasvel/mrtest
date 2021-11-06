@@ -6,6 +6,7 @@ Simple C testing framework
 
 Copy the `mrtest.c` and `mrtest.h` file into your project.
 In order to use the mrtest main: create a `.c` file that has the following:
+
 ```
 #define MRTEST_MAIN
 #include "mrtest.h"
@@ -50,6 +51,7 @@ Running without arguments simply executes all the testcases.
 ## Language
 
 Unique Test Identifier should be the same as a regular function name
+Multiple TEST_CASES can have the same Tag
 
 ---
 
@@ -58,6 +60,8 @@ Unique Test Identifier should be the same as a regular function name
 ### Main
 
 The main iterates over a vector containing function pointers to each testcase.
+If there are no arguments, or the function's tag is included in the arguments, the TEST_CASE is executed.
+First the TEST_CASE is forked and waited for, then checked for any potential crashes
 
 ### Assertions
 
@@ -70,7 +74,7 @@ The assertion simply expands the expression into an if statement that prints an 
 TEST_CASE macro expands into a set of functions:
 
 ```
-TEST_CASE(unique_identifier) {
+TEST_CASE(UniqueName, "AnyTag") {
 	/* ASSERTIONS */
 }
 ```
@@ -78,17 +82,16 @@ TEST_CASE(unique_identifier) {
 ->
 
 ```
-static void unique_identifier(void);
+static void UniqueName(void);
 
 static void MR_UNIQUE_NAMExx (void) __attribute__ ((constructor));
 static void MR_UNIQUE_NAMExx (void) {
-	/* add unique_identifier to a global table of function pointers */
+	/* add UniqueName and Tag to a global table of function pointers */
 }
 
-static void unique_identifier(void) {
+static void UniqueName(void) {
 	/* ASSERTIONS */
 }
 ```
 
-The constructor attribute is not C standard.
-It makes it so that the function is called before the main is executed.
+The __constructor__ attribute makes it so that the function is called before the main is executed.
