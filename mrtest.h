@@ -1,8 +1,112 @@
 #ifndef MRTEST_H
 # define MRTEST_H
 
-#ifndef FUNCTION_VECTOR_H
-# define FUNCTION_VECTOR_H
+#ifndef MRTEST_INTERNAL_H
+# define MRTEST_INTERNAL_H
+
+# include <unistd.h>
+
+/* Colors */
+
+# define _MR_RED_BOLD		"\033[1;31m"
+# define _MR_GREEN_BOLD		"\033[1;32m"
+# define _MR_RESET_COLOR	"\033[0m"
+
+/*
+Helper macros for _MR_MSG
+*/
+
+#define _MR_STRINGIZING(x) #x
+#define _MR_STR(x) _MR_STRINGIZING(x)
+#define _MR_FILE_LINE __FILE__ ":" _MR_STR(__LINE__)
+
+#define _MR_MSG_LEN(x) (sizeof(x) - 1)
+#define _MR_CONST_MSG_LEN (sizeof("]: MRTEST(): \n") - 1)
+
+/*
+Assertion message
+[file]:[line_number]: [function_name]: [expression]: [message_type]
+*/
+#define _MR_PASS_TEXT "[" _MR_GREEN_BOLD "PASS" _MR_RESET_COLOR "]"
+#define _MR_FAIL_TEXT "[" _MR_RED_BOLD "FAIL" _MR_RESET_COLOR "]"
+
+#define _MR_MSG(expr, type) \
+	do { \
+		write(STDOUT_FILENO, \
+			_MR_FILE_LINE " [", \
+			sizeof(_MR_FILE_LINE) + 1); \
+		write(STDOUT_FILENO, \
+			__func__, \
+			strlen(__func__)); \
+		write(STDOUT_FILENO, \
+			"]: MRTEST(" _MR_STR(expr) "): " type "\n", \
+			_MR_MSG_LEN(_MR_STR(expr)) \
+			+ _MR_MSG_LEN(type) \
+			+ _MR_CONST_MSG_LEN); \
+	} while (0);
+
+#define _MR_PASS_MSG(expr) _MR_MSG(expr, _MR_PASS_TEXT)
+#define _MR_FAIL_MSG(expr) _MR_MSG(expr, _MR_FAIL_TEXT)
+
+/*
+Main assertion macro
+*/
+
+#define _MR_TEST(expression) \
+do { \
+	if (!(expression)) { \
+		_MR_FAIL_MSG(expression) \
+	} \
+} while (0);
+
+#endif /* MRTEST_INTERNAL_H */
+#ifndef MR_TESTCASE_H
+# define MR_TESTCASE_H
+
+/*
+Simple prototype of void id(void)
+*/
+#define _MR_FUNCTION(x) static void x (void)
+
+#define _MR_CONC_(x, y) x##y
+#define _MR_CONC(x, y) _MR_CONC_(x, y)
+#define _MR_UNIQUE_NAME(x) _MR_CONC(x, __COUNTER__)
+
+/*
+Function body of the dynamic test function
+
+Will return the key and value of NAME and FUNCTION_POINTER
+*/
+#define _MR_TEST_FUNCTION_BODY(_MR_F_NAME, _MR_F_TAG) \
+	do { \
+		_MR_FunctionType x; \
+		x.tag = (strdup(_MR_F_TAG)); \
+		x.name = (strdup(_MR_STR(_MR_F_NAME))); \
+		x.function = (_MR_F_NAME); \
+		_MR_FunctionVectorPushback(&_MR_global_function_vector, x); \
+	} while (0);
+
+#define _MR_TEST_FUNCTION(id, tag, unique_name) \
+			static void unique_name (void) __attribute__ ((constructor)); \
+			static void unique_name (void) \
+			{ _MR_TEST_FUNCTION_BODY(id, tag) }
+
+/*
+Generates the TEST_CASE(unique_id) {}
+
+1. prototype for main tester function so we can get the function pointer
+2. prefunction with dynamic naming so we can get it with dlsym:
+	- Returns a pointer and identifier to the previous function (id)
+3. prototype for main tester function, the braces after define the body
+*/
+#define _MR_TEST_CASE(id, tag) \
+			_MR_FUNCTION(id); \
+			_MR_TEST_FUNCTION(id, tag, _MR_UNIQUE_NAME(_MR_TestFunction)) \
+			_MR_FUNCTION(id)
+
+#endif /* MR_TESTCASE_H */
+#ifndef MR_FUNCTION_VECTOR_H
+# define MR_FUNCTION_VECTOR_H
 
 # include <stddef.h>
 
@@ -22,7 +126,8 @@ The data the vector will hold
 This can also be easily converted to be stored in a hashtable later (id = key, function = value)
 */
 struct _MR_FunctionType {
-	char *id;
+	char* tag;
+	char* name;
 	_MR_TestCaseFunction function;
 };
 
@@ -60,124 +165,124 @@ void _MR_FunctionVectorDestructor(_MR_FunctionVectorType* v);
 int _MR_FunctionVectorPushback(_MR_FunctionVectorType** v_ptr, _MR_FunctionType x);
 _MR_FunctionVectorIteratorType _MR_FunctionVectorGetIterator(_MR_FunctionVectorType* v);
 
-#endif /* FUNCTION_VECTOR_H */
+#endif /* MR_FUNCTION_VECTOR_H */
 
-#ifndef MRTEST_INTERNAL_H
-# define MRTEST_INTERNAL_H
-
-# include <unistd.h> // write
-# include <string.h> // strdup
-
-/* Colors */
-
-# define _MR_RED_BOLD		"\033[1;31m"
-# define _MR_GREEN_BOLD		"\033[1;32m"
-# define _MR_RESET_COLOR	"\033[0m"
-
-/*
-Helper macros for _MR_MSG
-*/
-
-#define _MR_STRINGIZING(x) #x
-#define _MR_STR(x) _MR_STRINGIZING(x)
-#define _MR_FILE_LINE __FILE__ ":" _MR_STR(__LINE__)
-#define _MR_MSG_LENGTH(x, y) \
-	(sizeof(x) \
-	+ sizeof(y) \
-	+ sizeof(_MR_FILE_LINE) \
-	+ sizeof(": MR_ASSERT(): \n") - 4)
-
-/*
-Assertion message
-[file]:[line_number]: [expression]: [message_type]
-*/
-#define _MR_PASS_TEXT "[" _MR_GREEN_BOLD "PASS" _MR_RESET_COLOR "]"
-#define _MR_FAIL_TEXT "[" _MR_RED_BOLD "FAIL" _MR_RESET_COLOR "]"
-
-#define _MR_MSG(expr, type) \
-	do { \
-		write(STDOUT_FILENO, \
-		_MR_FILE_LINE ": MR_ASSERT(" _MR_STR(expr) "): " type "\n", \
-		_MR_MSG_LENGTH(_MR_STR(expr), type)); \
-	} while (0);
-
-#define _MR_PASS_MSG(expr) _MR_MSG(expr, _MR_PASS_TEXT)
-#define _MR_FAIL_MSG(expr) _MR_MSG(expr, _MR_FAIL_TEXT)
-
-/*
-Main assertion macro
-*/
-
-#define _MR_TEST(expression) \
-do { \
-	if (!(expression)) { \
-		_MR_FAIL_MSG(expression) \
-	} \
-} while (0);
-
-#endif /* MRTEST_INTERNAL_H */
-
-#ifndef MR_TESTCASE_H
-# define MR_TESTCASE_H
-
-/*
-Simple prototype of void id(void)
-*/
-#define _MR_FUNCTION(x) static void x (void)
-
-#define _MR_CONC(x, y) x##y
-#define _MR_CONC_(x, y) _MR_CONC(x, y)
-
-/*
-Function body of the dynamic test function
-
-Will return the key and value of NAME and FUNCTION_POINTER
-*/
-#define _MR_TEST_FUNCTION_BODY(name) \
-	do { \
-		_MR_FunctionType x; \
-		x.id = strdup(_MR_STR(name)); \
-		x.function = (name); \
-		_MR_FunctionVectorPushback(&_MR_global_function_vector, x); \
-	} while (0);
-
-#define _MR_TEST_FUNCTION(id, unique_name) \
-			static void unique_name (void) __attribute__ ((constructor)); \
-			static void unique_name (void) \
-			{ _MR_TEST_FUNCTION_BODY(id) }
-
-/*
-Generates the TEST_CASE(unique_id) {}
-
-1. prototype for main tester function so we can get the function pointer
-2. prefunction with dynamic naming so we can get it with dlsym:
-	- Returns a pointer and identifier to the previous function (id)
-3. prototype for main tester function, the braces after define the body
-*/
-#define _MR_TEST_CASE(id) \
-			_MR_FUNCTION(id); \
-			_MR_TEST_FUNCTION(id, _MR_CONC_(_MR_TestFunction, __COUNTER__)) \
-			_MR_FUNCTION(id)
-
-#endif /* MR_TESTCASE_H */
+# include <string.h> // Need strdup in copy function
 
 # define MRTEST(x) _MR_TEST(x)
-# define TEST_CASE(x) _MR_TEST_CASE(x)
+# define TEST_CASE(name, tag) _MR_TEST_CASE(name, tag)
 
 extern _MR_FunctionVectorType* _MR_global_function_vector;
 
 #ifdef MRTEST_MAIN
-int main(void) {
+#include <stdlib.h>
+#include <stdio.h>
+#include <sys/wait.h>
+
+/* Return true if tag should be executed */
+static int _MR_shouldExecuteTag(int argc, char *argv[], char *tag)
+{
+	if (argc == 0) {
+		return 1;
+	}
+
+	for (int i = 0; i < argc; ++i) {
+		if (strcmp(tag, argv[i]) == 0) {
+			return 1;
+		}
+	}
+
+	return 0;
+}
+
+static const char* _MR_SIGNAL_NAME(int signal) {
+	static const char* signals[] = {
+		[SIGABRT] = "SIGABRT",
+		[SIGALRM] = "SIGALRM",
+		[SIGBUS] = "SIGBUS",
+		[SIGCHLD] = "SIGCHLD",
+		[SIGCONT] = "SIGCONT",
+		[SIGFPE] = "SIGFPE",
+		[SIGHUP] = "SIGHUP",
+		[SIGILL] = "SIGILL",
+		[SIGINT] = "SIGINT",
+		[SIGIO] = "SIGIO",
+		[SIGKILL] = "SIGKILL",
+		[SIGPIPE] = "SIGPIPE",
+		[SIGPROF] = "SIGPROF",
+		[SIGPWR] = "SIGPWR",
+		[SIGQUIT] = "SIGQUIT",
+		[SIGSEGV] = "SIGSEGV",
+		[SIGSTKFLT] = "SIGSTKFLT",
+		[SIGSTOP] = "SIGSTOP",
+		[SIGTSTP] = "SIGTSTP",
+		[SIGSYS] = "SIGSYS",
+		[SIGTERM] = "SIGTERM",
+		[SIGTRAP] = "SIGTRAP",
+		[SIGTTIN] = "SIGTTIN",
+		[SIGTTOU] = "SIGTTOU",
+		[SIGURG] = "SIGURG",
+		[SIGUSR1] = "SIGUSR1",
+		[SIGUSR2] = "SIGUSR2",
+		[SIGVTALRM] = "SIGVTALRM",
+		[SIGXCPU] = "SIGXCPU",
+		[SIGXFSZ] = "SIGXFSZ",
+		[SIGWINCH] = "SIGWINCH"
+	};
+
+	return signals[signal];
+}
+
+static void _MR_putString(int fd, const char* s) {
+	write(fd, s, strlen(s));
+}
+
+static void _MR_executeTestCase(_MR_FunctionType* it) {
+	pid_t pid = fork();
+	if (pid == -1) {
+		perror("fork");
+		exit(EXIT_FAILURE);
+	} else if (pid == 0) {
+		it->function();
+		exit(EXIT_SUCCESS);
+	}
+
+	int status;
+	if (waitpid(pid, &status, 0) == -1) {
+		perror("waitpid");
+		exit(EXIT_FAILURE);
+	}
+
+	if (WIFEXITED(status)) {
+		if (WEXITSTATUS(status) != 0) {
+			fprintf(stderr, "%s: error: exit status: [%d]\r\n", it->name, WEXITSTATUS(status));
+		}
+	} else if (WIFSIGNALED(status)) {
+		_MR_putString(STDERR_FILENO, it->name);
+		_MR_putString(STDERR_FILENO, ": CRASH: [" _MR_RED_BOLD);
+		_MR_putString(STDERR_FILENO, _MR_SIGNAL_NAME(WTERMSIG(status)));
+		_MR_putString(STDERR_FILENO, _MR_RESET_COLOR "]\r\n");
+		// fprintf(stderr, "%s: error: [" _MR_RED_BOLD "%s" _MR_RESET_COLOR "]\r\n",
+		// 	it->name, _MR_SIGNAL_NAME(WTERMSIG(status)));
+	}
+}
+
+int main(int argc, char *argv[]) {
 	_MR_FunctionVectorType* v = _MR_global_function_vector;
 
 	if (v == NULL) {
 		return 0;
 	}
 
+/* Skip program name */
+	--argc; ++argv;
+
 /* Execute Testcases */
 	_MR_FunctionVectorIteratorType it = _MR_FunctionVectorGetIterator(v);
 	while (it.begin != it.end) {
-		it.begin->function();
+		if (_MR_shouldExecuteTag(argc, argv, it.begin->tag)) {
+			_MR_executeTestCase(it.begin);
+		}
 		++it.begin;
 	}
 

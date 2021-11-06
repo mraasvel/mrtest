@@ -5,11 +5,3 @@
 
 	- Configuration file reading: have settings read from config file like timeout
 	- Timeout functionality, add configuration option to timeout each testcase
-
-Done:
-
-	print out function name in msg
-	second argument: tag
-	executing based on tag if arguments specified
-	forking processes
-	recognizing crashes and printing error messages

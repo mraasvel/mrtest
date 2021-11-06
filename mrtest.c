@@ -1,6 +1,7 @@
 #include "mrtest.h"
 #include <stdlib.h>
 #include <assert.h>
+#include <string.h>
 #include <stdio.h>
 
 _MR_FunctionVectorType* _MR_global_function_vector = NULL;
@@ -27,7 +28,8 @@ _MR_FunctionVectorType* _MR_FunctionVectorConstructor(size_t initial_capacity) {
 void _MR_FunctionVectorDestructor(_MR_FunctionVectorType* v) {
 	_MR_FunctionVectorIteratorType it = _MR_FunctionVectorGetIterator(v);
 	while (it.begin != it.end) {
-		free(it.begin->id);
+		free(it.begin->tag);
+		free(it.begin->name);
 		++it.begin;
 	}
 	free(v->table);

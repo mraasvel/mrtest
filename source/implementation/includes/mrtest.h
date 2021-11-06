@@ -1,9 +1,10 @@
 #ifndef MRTEST_H
 # define MRTEST_H
 
-# include "mrtest_internal.h"
-# include "mr_testcase.h"
-# include "mr_function_vector.h"
+# include "mrtest_internal.h" // REPLACE
+# include "mr_testcase.h" // REPLACE
+# include "mr_function_vector.h" // REPLACE
+
 # include <string.h> // Need strdup in copy function
 
 # define MRTEST(x) _MR_TEST(x)
@@ -96,7 +97,7 @@ static void _MR_executeTestCase(_MR_FunctionType* it) {
 		}
 	} else if (WIFSIGNALED(status)) {
 		_MR_putString(STDERR_FILENO, it->name);
-		_MR_putString(STDERR_FILENO, ": error: [" _MR_RED_BOLD);
+		_MR_putString(STDERR_FILENO, ": CRASH: [" _MR_RED_BOLD);
 		_MR_putString(STDERR_FILENO, _MR_SIGNAL_NAME(WTERMSIG(status)));
 		_MR_putString(STDERR_FILENO, _MR_RESET_COLOR "]\r\n");
 		// fprintf(stderr, "%s: error: [" _MR_RED_BOLD "%s" _MR_RESET_COLOR "]\r\n",

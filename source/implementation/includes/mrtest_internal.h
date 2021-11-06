@@ -18,7 +18,7 @@ Helper macros for _MR_MSG
 #define _MR_FILE_LINE __FILE__ ":" _MR_STR(__LINE__)
 
 #define _MR_MSG_LEN(x) (sizeof(x) - 1)
-#define _MR_CONST_MSG_LEN (sizeof(": MR_ASSERT(): \n") - 1)
+#define _MR_CONST_MSG_LEN (sizeof("]: MRTEST(): \n") - 1)
 
 /*
 Assertion message
@@ -30,13 +30,13 @@ Assertion message
 #define _MR_MSG(expr, type) \
 	do { \
 		write(STDOUT_FILENO, \
-			_MR_FILE_LINE ": ", \
+			_MR_FILE_LINE " [", \
 			sizeof(_MR_FILE_LINE) + 1); \
 		write(STDOUT_FILENO, \
 			__func__, \
 			strlen(__func__)); \
 		write(STDOUT_FILENO, \
-			": MR_ASSERT(" _MR_STR(expr) "): " type "\n", \
+			"]: MRTEST(" _MR_STR(expr) "): " type "\n", \
 			_MR_MSG_LEN(_MR_STR(expr)) \
 			+ _MR_MSG_LEN(type) \
 			+ _MR_CONST_MSG_LEN); \
