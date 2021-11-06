@@ -19,7 +19,8 @@ The data the vector will hold
 This can also be easily converted to be stored in a hashtable later (id = key, function = value)
 */
 struct _MR_FunctionType {
-	char *id;
+	char* tag;
+	char* name;
 	_MR_TestCaseFunction function;
 };
 
