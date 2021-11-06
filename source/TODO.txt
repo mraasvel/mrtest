@@ -1,7 +1,6 @@
 -- TODO --
 
 	- Script to generate single files, determine what is needed where
-	- prefix all macro parameters with _MR_ to avoid naming conflicts
 
 	- Configuration file reading: have settings read from config file like timeout
 	- Timeout functionality, add configuration option to timeout each testcase

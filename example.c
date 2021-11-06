@@ -10,7 +10,7 @@ TEST_CASE(TestName, "test_tag") {
 
 TEST_CASE(CrashingTestSegv, "crash") {
 	void* x = NULL;
-	MRTEST(*(int*)x); // dereferenc NULL pointer
+	MRTEST(*(int*)x); // dereference NULL pointer causing SIGSEGV
 }
 
 TEST_CASE(CrashingTestInt, "crash") {
