@@ -1,1 +1,1 @@
-gcc -I. mrtest.c source/example_tests.c -o mrtest.out && ./mrtest.out $@
+gcc -I. mrtest.c example.c -o mrtest.out && ./mrtest.out $@
