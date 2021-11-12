@@ -1,6 +1,5 @@
 IGNORE_LINE_STR = "IGNORE_TAG"
 
-
 # Order matters, so can't really do a dir listing
 TARGET_H_FILE = "mrtest.h"
 HEADER_DIR = "./includes"
@@ -26,7 +25,6 @@ def createHeader():
 				if l.find(IGNORE_LINE_STR) == -1:
 					target_file.write(l)
 	target_file.close()
-	return
 
 def createCFiles():
 	include_content = set()
@@ -43,9 +41,8 @@ def createCFiles():
 	for x in include_content:
 		f.write(x)
 	f.write(content)
-	return
+	f.close()
 
 if __name__ == '__main__':
-
 	createHeader()
 	createCFiles()
