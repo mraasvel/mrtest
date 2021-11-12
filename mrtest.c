@@ -1,22 +1,22 @@
-#include <assert.h>
+#include <sys/wait.h>
 #include <stdlib.h>
 #include "mrtest.h"
 #include <stdio.h>
-#include <sys/wait.h>
+#include <assert.h>
 #include <string.h>
 
 _MR_FunctionVectorType* _MR_FunctionVectorConstructor(size_t initial_capacity) {
 
 	assert(initial_capacity > 0);
 
-	_MR_FunctionVectorType* v = malloc(1 * sizeof(_MR_FunctionVectorType));
+	_MR_FunctionVectorType* v = (_MR_FunctionVectorType*)malloc(1 * sizeof(_MR_FunctionVectorType));
 	if (v == NULL) {
 		return NULL;
 	}
 
 	v->capacity = initial_capacity;
 	v->size = 0;
-	v->table = malloc(initial_capacity * sizeof(_MR_FunctionType));
+	v->table = (_MR_FunctionType*)malloc(initial_capacity * sizeof(_MR_FunctionType));
 	if (v->table == NULL) {
 		free(v);
 		return NULL;
@@ -40,7 +40,7 @@ Resize the table if there's no more room for new elements
 */
 static int _MR_FunctionVectorEnsureCapacity(_MR_FunctionVectorType* v) {
 	if (v->size == v->capacity) {
-		_MR_FunctionType* new_table = malloc(v->capacity * 2 * sizeof(_MR_FunctionType));
+		_MR_FunctionType* new_table = (_MR_FunctionType*)malloc(v->capacity * 2 * sizeof(_MR_FunctionType));
 		if (new_table == NULL) {
 			return -1;
 		}
