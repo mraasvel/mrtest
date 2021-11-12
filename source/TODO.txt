@@ -1,6 +1,6 @@
 -- TODO --
 
-	- CI with mac/linux compilation
+	- Lock master branch, pull request only
 	- Nonzero exit status for failed testcases
 
 	- Configuration file reading: have settings read from config file like timeout
