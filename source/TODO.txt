@@ -1,6 +1,7 @@
 -- TODO --
 
-	- Script to generate single files, determine what is needed where
+	- CI with mac/linux compilation
+	- Nonzero exit status for failed testcases
 
 	- Configuration file reading: have settings read from config file like timeout
 	- Timeout functionality, add configuration option to timeout each testcase

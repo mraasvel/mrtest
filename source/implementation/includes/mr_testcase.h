@@ -1,7 +1,7 @@
 #ifndef MR_TESTCASE_H
 # define MR_TESTCASE_H
 
-#include "mrtest_internal.h"
+#include "mrtest_internal.h" // IGNORE_TAG
 
 /*
 Simple prototype of void id(void)
