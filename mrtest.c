@@ -1,9 +1,9 @@
-#include <stdlib.h>
-#include <string.h>
 #include <assert.h>
+#include <stdlib.h>
+#include "mrtest.h"
 #include <stdio.h>
 #include <sys/wait.h>
-#include "mrtest.h"
+#include <string.h>
 
 _MR_FunctionVectorType* _MR_FunctionVectorConstructor(size_t initial_capacity) {
 
@@ -91,6 +91,37 @@ _MR_FunctionVectorIteratorType _MR_FunctionVectorGetIterator(_MR_FunctionVectorT
 
 _MR_FunctionVectorType* _MR_global_function_vector = NULL;
 
+static int numLen(size_t n) {
+	int i = 1;
+	while (n >= 10) {
+		++i;
+		n /= 10;
+	}
+	return i;
+}
+
+static void printSign(int num_digits) {
+	printf(_MR_GREEN_BOLD);
+	for (int i = 0; i < num_digits; ++i) {
+		printf("=");
+	}
+	printf(_MR_RESET_COLOR "\n");
+}
+
+void printSuccessMessage(size_t num_testcases) {
+	int num_digits = numLen(num_testcases);
+
+	printf("\n");
+	printf(_MR_GREEN_BOLD "===========================================");
+	printSign(num_digits);
+	printf(_MR_GREEN_BOLD "=======" _MR_RESET_COLOR
+	" Ran [%lu] successful testcases " 
+	_MR_GREEN_BOLD "=======" _MR_RESET_COLOR "\n", num_testcases);
+	printf(_MR_GREEN_BOLD "===========================================" );
+	printSign(num_digits);
+	printf("\n");
+}
+
 /* Return true if tag should be executed */
 int _MR_shouldExecuteTag(int argc, char *argv[], char *tag)
 {
@@ -122,10 +153,8 @@ static const char* _MR_SIGNAL_NAME(int signal) {
 		[SIGKILL] = "SIGKILL",
 		[SIGPIPE] = "SIGPIPE",
 		[SIGPROF] = "SIGPROF",
-		[SIGPWR] = "SIGPWR",
 		[SIGQUIT] = "SIGQUIT",
 		[SIGSEGV] = "SIGSEGV",
-		[SIGSTKFLT] = "SIGSTKFLT",
 		[SIGSTOP] = "SIGSTOP",
 		[SIGTSTP] = "SIGTSTP",
 		[SIGSYS] = "SIGSYS",
@@ -145,7 +174,7 @@ static const char* _MR_SIGNAL_NAME(int signal) {
 	return signals[signal];
 }
 
-void _MR_executeTestCase(_MR_FunctionType* it) {
+int _MR_executeTestCase(_MR_FunctionType* it) {
 	pid_t pid = fork();
 	if (pid == -1) {
 		perror("fork");
@@ -161,12 +190,16 @@ void _MR_executeTestCase(_MR_FunctionType* it) {
 		exit(EXIT_FAILURE);
 	}
 
+	// Check exit status
 	if (WIFEXITED(status)) {
 		if (WEXITSTATUS(status) != 0) {
-			fprintf(stderr, "%s: error: exit status: [%d]\r\n", it->name, WEXITSTATUS(status));
+			return -1;
 		}
 	} else if (WIFSIGNALED(status)) {
 		fprintf(stderr, "%s: CRASH: [" _MR_RED_BOLD "%s" _MR_RESET_COLOR "]\r\n",
 			it->name, _MR_SIGNAL_NAME(WTERMSIG(status)));
+		return -1;
 	}
+
+	return 0;
 }

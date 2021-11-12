@@ -2,6 +2,7 @@
 # define MRTEST_INTERNAL_H
 
 # include <unistd.h>
+# include <stdlib.h>
 
 /* Colors */
 
@@ -53,9 +54,8 @@ Main assertion macro
 do { \
 	if (!(expression)) { \
 		_MR_FAIL_MSG(expression) \
-	} else { \
-		_MR_PASS_MSG(expression) \
-	}\
+		exit(EXIT_FAILURE); \
+	} \
 } while (0);
 
 #endif /* MRTEST_INTERNAL_H */
