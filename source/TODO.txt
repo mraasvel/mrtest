@@ -1,7 +1,4 @@
 -- TODO --
 
-	- Lock master branch, pull request only
-	- Nonzero exit status for failed testcases
-
 	- Configuration file reading: have settings read from config file like timeout
 	- Timeout functionality, add configuration option to timeout each testcase
