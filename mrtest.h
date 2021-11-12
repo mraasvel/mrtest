@@ -1,6 +1,3 @@
-#ifndef MRTEST_H
-# define MRTEST_H
-
 #ifndef MRTEST_INTERNAL_H
 # define MRTEST_INTERNAL_H
 
@@ -56,55 +53,12 @@ Main assertion macro
 do { \
 	if (!(expression)) { \
 		_MR_FAIL_MSG(expression) \
-	} \
+	} else { \
+		_MR_PASS_MSG(expression) \
+	}\
 } while (0);
 
 #endif /* MRTEST_INTERNAL_H */
-#ifndef MR_TESTCASE_H
-# define MR_TESTCASE_H
-
-/*
-Simple prototype of void id(void)
-*/
-#define _MR_FUNCTION(x) static void x (void)
-
-#define _MR_CONC_(x, y) x##y
-#define _MR_CONC(x, y) _MR_CONC_(x, y)
-#define _MR_UNIQUE_NAME(x) _MR_CONC(x, __COUNTER__)
-
-/*
-Function body of the dynamic test function
-
-Will return the key and value of NAME and FUNCTION_POINTER
-*/
-#define _MR_TEST_FUNCTION_BODY(_MR_F_NAME, _MR_F_TAG) \
-	do { \
-		_MR_FunctionType x; \
-		x.tag = (strdup(_MR_F_TAG)); \
-		x.name = (strdup(_MR_STR(_MR_F_NAME))); \
-		x.function = (_MR_F_NAME); \
-		_MR_FunctionVectorPushback(&_MR_global_function_vector, x); \
-	} while (0);
-
-#define _MR_TEST_FUNCTION(id, tag, unique_name) \
-			static void unique_name (void) __attribute__ ((constructor)); \
-			static void unique_name (void) \
-			{ _MR_TEST_FUNCTION_BODY(id, tag) }
-
-/*
-Generates the TEST_CASE(unique_id) {}
-
-1. prototype for main tester function so we can get the function pointer
-2. prefunction with dynamic naming so we can get it with dlsym:
-	- Returns a pointer and identifier to the previous function (id)
-3. prototype for main tester function, the braces after define the body
-*/
-#define _MR_TEST_CASE(id, tag) \
-			_MR_FUNCTION(id); \
-			_MR_TEST_FUNCTION(id, tag, _MR_UNIQUE_NAME(_MR_TestFunction)) \
-			_MR_FUNCTION(id)
-
-#endif /* MR_TESTCASE_H */
 #ifndef MR_FUNCTION_VECTOR_H
 # define MR_FUNCTION_VECTOR_H
 
@@ -166,6 +120,55 @@ int _MR_FunctionVectorPushback(_MR_FunctionVectorType** v_ptr, _MR_FunctionType 
 _MR_FunctionVectorIteratorType _MR_FunctionVectorGetIterator(_MR_FunctionVectorType* v);
 
 #endif /* MR_FUNCTION_VECTOR_H */
+#ifndef MR_TESTCASE_H
+# define MR_TESTCASE_H
+
+
+/*
+Simple prototype of void id(void)
+*/
+#define _MR_FUNCTION(x) static void x (void)
+
+#define _MR_CONC_(x, y) x##y
+#define _MR_CONC(x, y) _MR_CONC_(x, y)
+#define _MR_UNIQUE_NAME(x) _MR_CONC(x, __COUNTER__)
+
+/*
+Function body of the dynamic test function
+
+Will return the key and value of NAME and FUNCTION_POINTER
+*/
+#define _MR_TEST_FUNCTION_BODY(_MR_F_NAME, _MR_F_TAG) \
+	do { \
+		_MR_FunctionType x; \
+		x.tag = (strdup(_MR_F_TAG)); \
+		x.name = (strdup(_MR_STR(_MR_F_NAME))); \
+		x.function = (_MR_F_NAME); \
+		_MR_FunctionVectorPushback(&_MR_global_function_vector, x); \
+	} while (0);
+
+#define _MR_TEST_FUNCTION(id, tag, unique_name) \
+			static void unique_name (void) __attribute__ ((constructor)); \
+			static void unique_name (void) \
+			{ _MR_TEST_FUNCTION_BODY(id, tag) }
+
+/*
+Generates the TEST_CASE(unique_id) {}
+
+1. prototype for main tester function so we can get the function pointer
+2. prefunction with dynamic naming so we can get it with dlsym:
+	- Returns a pointer and identifier to the previous function (id)
+3. prototype for main tester function, the braces after define the body
+*/
+#define _MR_TEST_CASE(id, tag) \
+			_MR_FUNCTION(id); \
+			_MR_TEST_FUNCTION(id, tag, _MR_UNIQUE_NAME(_MR_TestFunction)) \
+			_MR_FUNCTION(id)
+
+#endif /* MR_TESTCASE_H */
+#ifndef MRTEST_H
+# define MRTEST_H
+
 
 # include <string.h> // Need strdup in copy function
 
@@ -175,14 +178,11 @@ _MR_FunctionVectorIteratorType _MR_FunctionVectorGetIterator(_MR_FunctionVectorT
 extern _MR_FunctionVectorType* _MR_global_function_vector;
 
 #ifdef MRTEST_MAIN
-
 void _MR_executeTestCase(_MR_FunctionType* it);
 int _MR_shouldExecuteTag(int argc, char *argv[], char *tag);
-
 int main(int argc, char *argv[]) {
 	_MR_FunctionVectorType* v = _MR_global_function_vector;
 
-/* No TEST_CASES defined */
 	if (v == NULL) {
 		return 0;
 	}

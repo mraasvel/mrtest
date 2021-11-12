@@ -1,10 +1,9 @@
-#include "mrtest.h"
 #include <stdlib.h>
+#include <string.h>
 #include <assert.h>
 #include <stdio.h>
 #include <sys/wait.h>
-
-_MR_FunctionVectorType* _MR_global_function_vector = NULL;
+#include "mrtest.h"
 
 _MR_FunctionVectorType* _MR_FunctionVectorConstructor(size_t initial_capacity) {
 
@@ -90,6 +89,8 @@ _MR_FunctionVectorIteratorType _MR_FunctionVectorGetIterator(_MR_FunctionVectorT
 	};
 }
 
+_MR_FunctionVectorType* _MR_global_function_vector = NULL;
+
 /* Return true if tag should be executed */
 int _MR_shouldExecuteTag(int argc, char *argv[], char *tag)
 {
@@ -165,7 +166,7 @@ void _MR_executeTestCase(_MR_FunctionType* it) {
 			fprintf(stderr, "%s: error: exit status: [%d]\r\n", it->name, WEXITSTATUS(status));
 		}
 	} else if (WIFSIGNALED(status)) {
-		fprintf(stderr, "%s: error: [" _MR_RED_BOLD "%s" _MR_RESET_COLOR "]\r\n",
+		fprintf(stderr, "%s: CRASH: [" _MR_RED_BOLD "%s" _MR_RESET_COLOR "]\r\n",
 			it->name, _MR_SIGNAL_NAME(WTERMSIG(status)));
 	}
 }
