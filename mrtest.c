@@ -1,9 +1,9 @@
-#include <stdlib.h>
-#include <assert.h>
-#include <stdio.h>
 #include "mrtest.h"
 #include <sys/wait.h>
+#include <stdlib.h>
+#include <assert.h>
 #include <string.h>
+#include <stdio.h>
 
 _MR_FunctionVectorType* _MR_FunctionVectorConstructor(size_t initial_capacity) {
 

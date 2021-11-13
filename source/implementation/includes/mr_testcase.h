@@ -41,7 +41,7 @@ Generates the TEST_CASE(unique_id) {}
 */
 #define _MR_TEST_CASE(id, tag) \
 			_MR_FUNCTION(id); \
-			_MR_TEST_FUNCTION(id, tag, _MR_UNIQUE_NAME(_MR_TestFunction)) \
+			_MR_TEST_FUNCTION(id, _MR_STR(tag), _MR_UNIQUE_NAME(_MR_TestFunction)) \
 			_MR_FUNCTION(id)
 
 #endif /* MR_TESTCASE_H */
