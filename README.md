@@ -11,13 +11,15 @@ In order to use the mrtest main: create a `.c` file that has the following:
 #define MRTEST_MAIN
 #include "mrtest.h"
 
-TEST_CASE(TestName, "TestTag") {
+TEST_CASE(TestName, TestTag) {
 	MRTEST(expression);
 }
 ```
 The MrTest main will automatically run TEST_CASES and the code inside of it.
 If any arguments are specified, they will be matched with function tags (not unique),
 only matching tags will be executed
+
+NOTE: both TestName and TestTag should be without quotes, TestName has to be a valid function name.
 
 There will only be output of failed test cases,
 which prints the File, LineNumber, TestName, and assertion.
@@ -32,7 +34,7 @@ If any crash occurs within a TEST_CASE, it will be caught by the main and printe
 2 #include "mrtest.h"
 3 #include <stdbool.h>
 4
-5 TEST_CASE(TestName, "test_tag") {
+5 TEST_CASE(TestName, TestTag) {
 6 	MRTEST(true);
 7 	MRTEST(false);
 8 }
@@ -74,7 +76,7 @@ The assertion simply expands the expression into an if statement that prints an 
 TEST_CASE macro expands into a set of functions:
 
 ```
-TEST_CASE(UniqueName, "AnyTag") {
+TEST_CASE(UniqueName, AnyTag) {
 	/* ASSERTIONS */
 }
 ```
