@@ -40,7 +40,7 @@ If any crash occurs within a TEST_CASE, it will be caught by the main and printe
 
 ## Output
 ```
-./run_example.sh TestTag
+./run_example.sh test_tag
 mrtest_main.c:7 [TestName]: MRTEST(0): [FAIL]
 ```
 

@@ -193,10 +193,12 @@ int main(int argc, char *argv[]) {
 	--argc; ++argv;
 
 	int exit_status = 0;
+	size_t num_testcases = 0;
 /* Execute Testcases */
 	_MR_FunctionVectorIteratorType it = _MR_FunctionVectorGetIterator(v);
 	while (it.begin != it.end) {
 		if (_MR_shouldExecuteTag(argc, argv, it.begin->tag)) {
+			++num_testcases;
 			if (_MR_executeTestCase(it.begin) != 0) {
 				exit_status = 1;
 			}
@@ -204,7 +206,6 @@ int main(int argc, char *argv[]) {
 		++it.begin;
 	}
 
-	size_t num_testcases = v->size;
 	_MR_FunctionVectorDestructor(v);
 
 	if (exit_status == 0) {

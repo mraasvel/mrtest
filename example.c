@@ -8,6 +8,10 @@ TEST_CASE(TestName, "test_tag") {
 	MRTEST(false);
 }
 
+TEST_CASE(PassTest, "pass_tag") {
+	MRTEST(true);
+}
+
 TEST_CASE(CrashingTestSegv, "crash") {
 	void* x = NULL;
 	MRTEST(*(int*)x); // dereference NULL pointer causing SIGSEGV
