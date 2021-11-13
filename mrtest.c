@@ -1,8 +1,9 @@
-#include "mrtest.h"
-#include <sys/wait.h>
 #include <stdlib.h>
+#include "mrtest.h"
 #include <assert.h>
 #include <string.h>
+#include <unistd.h>
+#include <sys/wait.h>
 #include <stdio.h>
 
 _MR_FunctionVectorType* _MR_FunctionVectorConstructor(size_t initial_capacity) {
@@ -91,7 +92,7 @@ _MR_FunctionVectorIteratorType _MR_FunctionVectorGetIterator(_MR_FunctionVectorT
 
 _MR_FunctionVectorType* _MR_global_function_vector = NULL;
 
-static int numLen(size_t n) {
+static int _MR_numLen(size_t n) {
 	int i = 1;
 	while (n >= 10) {
 		++i;
@@ -100,25 +101,47 @@ static int numLen(size_t n) {
 	return i;
 }
 
-static void printSign(int num_digits) {
-	printf(_MR_GREEN_BOLD);
+static void _MR_printSign(int num_digits, const char* color) {
+	printf("%s", color);
 	for (int i = 0; i < num_digits; ++i) {
 		printf("=");
 	}
 	printf(_MR_RESET_COLOR "\n");
 }
 
-void printSuccessMessage(size_t num_testcases) {
-	int num_digits = numLen(num_testcases);
+static void _MR_printSuccessMessage(size_t num_testcases) {
+	int num_digits = _MR_numLen(num_testcases);
 
-	printf("\n");
-	printf(_MR_GREEN_BOLD "===========================================");
-	printSign(num_digits);
+	printf(_MR_GREEN_BOLD "=========================================");
+	_MR_printSign(num_digits, _MR_GREEN_BOLD);
 	printf(_MR_GREEN_BOLD "=======" _MR_RESET_COLOR
-	" Ran [%lu] successful testcases " 
+	" Passed [%lu] total TestCases " 
 	_MR_GREEN_BOLD "=======" _MR_RESET_COLOR "\n", num_testcases);
-	printf(_MR_GREEN_BOLD "===========================================" );
-	printSign(num_digits);
+	printf(_MR_GREEN_BOLD "=========================================");
+	_MR_printSign(num_digits, _MR_GREEN_BOLD);
+}
+
+static void _MR_printFailMessage(size_t num_testcases, size_t num_failed) {
+	size_t num_signs = _MR_numLen(num_testcases) + _MR_numLen(num_failed);
+
+	printf(_MR_RED_BOLD "===============================================");
+	_MR_printSign(num_signs, _MR_RED_BOLD);
+
+	printf(_MR_RED_BOLD "=======" _MR_RESET_COLOR
+		" Failed [%lu] of [%lu] total TestCases "
+		_MR_RED_BOLD "=======" _MR_RESET_COLOR "\n", num_failed, num_testcases);
+
+	printf(_MR_RED_BOLD "===============================================");
+	_MR_printSign(num_signs, _MR_RED_BOLD);
+}
+
+void _MR_printEndMessage(size_t num_testcases, size_t num_failed) {
+	printf("\n");
+	if (num_failed == 0) {
+		_MR_printSuccessMessage(num_testcases);
+	} else {
+		_MR_printFailMessage(num_testcases, num_failed);
+	}
 	printf("\n");
 }
 

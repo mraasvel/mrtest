@@ -1,5 +1,6 @@
 #include "mrtest.h"
 #include <stdbool.h>
+#include <unistd.h>
 #include <signal.h>
 
 int f(char *s) {
@@ -7,36 +8,36 @@ int f(char *s) {
 	return 0;
 }
 
-TEST_CASE(abcd, tag) {
+TEST_CASE("abcd", "tag") {
 	MRTEST(1 == 1);
 	// MRTEST(false);
 	// MRTEST(f("abcde"));
 }
 
-TEST_CASE(asdjf, tagging) {
+TEST_CASE("asdjf", "tagging") {
 	MRTEST(1 == 0);
 }
 
-TEST_CASE(ExampleTests1, tag) {
+TEST_CASE("ExampleTests1", "tag") {
 	MRTEST("Hello");
 }
 
-TEST_CASE(ExampleTest2, crash) {
+TEST_CASE("ExampleTest2", "crash") {
 	kill(getpid(), SIGSEGV);
 }
 
 /* Crashes are handled through fork and waitpid checking */
-TEST_CASE(ExampleTest3, SIGKILL) {
+TEST_CASE("ExampleTest3", "SIGKILL") {
 	kill(getpid(), SIGKILL);
 }
-TEST_CASE(ExampleTest5, SIGKILL) {
+TEST_CASE("ExampleTest5", "SIGKILL") {
 	kill(getpid(), SIGINT);
 }
-TEST_CASE(ExampleTest6, SIGKILL) {
+TEST_CASE("ExampleTest6", "SIGKILL") {
 	kill(getpid(), SIGABRT);
 }
 
-TEST_CASE(ExampleTest4, Correct) {
+TEST_CASE("ExampleTest4", "Correct") {
 	MRTEST(1);
 	MRTEST(1);
 	MRTEST(1);

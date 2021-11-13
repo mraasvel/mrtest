@@ -1,4 +1,5 @@
 -- TODO --
 
+	- Any number of tags using VA_ARG
 	- Configuration file reading: have settings read from config file like timeout
 	- Timeout functionality, add configuration option to timeout each testcase

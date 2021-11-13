@@ -1,7 +1,7 @@
 #ifndef MRTEST_INTERNAL_H
 # define MRTEST_INTERNAL_H
 
-# include <unistd.h>
+# include <stdio.h>
 # include <stdlib.h>
 
 /* Colors */
@@ -30,17 +30,7 @@ Assertion message
 
 #define _MR_MSG(expr, type) \
 	do { \
-		write(STDOUT_FILENO, \
-			_MR_FILE_LINE " [", \
-			sizeof(_MR_FILE_LINE) + 1); \
-		write(STDOUT_FILENO, \
-			__func__, \
-			strlen(__func__)); \
-		write(STDOUT_FILENO, \
-			"]: MRTEST(" _MR_STR(expr) "): " type "\n", \
-			_MR_MSG_LEN(_MR_STR(expr)) \
-			+ _MR_MSG_LEN(type) \
-			+ _MR_CONST_MSG_LEN); \
+		fprintf(stderr, _MR_FILE_LINE " MRTEST(" _MR_STR(expr) "): " type "\n"); \
 	} while (0);
 
 #define _MR_PASS_MSG(expr) _MR_MSG(expr, _MR_PASS_TEXT)

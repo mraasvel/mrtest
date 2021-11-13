@@ -17,19 +17,24 @@ Function body of the dynamic test function
 
 Will return the key and value of NAME and FUNCTION_POINTER
 */
-#define _MR_TEST_FUNCTION_BODY(_MR_F_NAME, _MR_F_TAG) \
+#define _MR_TEST_FUNCTION_BODY(_MR_F_ID, _MR_F_TAG, _MR_F_NAME) \
 	do { \
 		_MR_FunctionType x; \
 		x.tag = (strdup(_MR_F_TAG)); \
-		x.name = (strdup(_MR_STR(_MR_F_NAME))); \
+		x.name = (strdup(_MR_F_ID)); \
 		x.function = (_MR_F_NAME); \
 		_MR_FunctionVectorPushback(&_MR_global_function_vector, x); \
 	} while (0);
 
-#define _MR_TEST_FUNCTION(id, tag, unique_name) \
+#define _MR_TEST_FUNCTION(id, tag, fname, unique_name) \
 			static void unique_name (void) __attribute__ ((constructor)); \
 			static void unique_name (void) \
-			{ _MR_TEST_FUNCTION_BODY(id, tag) }
+			{ _MR_TEST_FUNCTION_BODY(id, tag, fname) }
+
+#define _MR_TEST_CASE_ID(id, tag, fname) \
+		_MR_FUNCTION(fname); \
+		_MR_TEST_FUNCTION(id, tag, fname, _MR_UNIQUE_NAME(_MR_TestFunction)) \
+		_MR_FUNCTION(fname)
 
 /*
 Generates the TEST_CASE(unique_id) {}
@@ -39,9 +44,6 @@ Generates the TEST_CASE(unique_id) {}
 	- Returns a pointer and identifier to the previous function (id)
 3. prototype for main tester function, the braces after define the body
 */
-#define _MR_TEST_CASE(id, tag) \
-			_MR_FUNCTION(id); \
-			_MR_TEST_FUNCTION(id, _MR_STR(tag), _MR_UNIQUE_NAME(_MR_TestFunction)) \
-			_MR_FUNCTION(id)
+#define _MR_TEST_CASE(id, tag) _MR_TEST_CASE_ID(id, tag, _MR_UNIQUE_NAME(_MR_TestCase))
 
 #endif /* MR_TESTCASE_H */

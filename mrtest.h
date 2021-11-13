@@ -1,7 +1,7 @@
 #ifndef MRTEST_INTERNAL_H
 # define MRTEST_INTERNAL_H
 
-# include <unistd.h>
+# include <stdio.h>
 # include <stdlib.h>
 
 /* Colors */
@@ -30,17 +30,7 @@ Assertion message
 
 #define _MR_MSG(expr, type) \
 	do { \
-		write(STDOUT_FILENO, \
-			_MR_FILE_LINE " [", \
-			sizeof(_MR_FILE_LINE) + 1); \
-		write(STDOUT_FILENO, \
-			__func__, \
-			strlen(__func__)); \
-		write(STDOUT_FILENO, \
-			"]: MRTEST(" _MR_STR(expr) "): " type "\n", \
-			_MR_MSG_LEN(_MR_STR(expr)) \
-			+ _MR_MSG_LEN(type) \
-			+ _MR_CONST_MSG_LEN); \
+		fprintf(stderr, _MR_FILE_LINE " MRTEST(" _MR_STR(expr) "): " type "\n"); \
 	} while (0);
 
 #define _MR_PASS_MSG(expr) _MR_MSG(expr, _MR_PASS_TEXT)
@@ -138,19 +128,24 @@ Function body of the dynamic test function
 
 Will return the key and value of NAME and FUNCTION_POINTER
 */
-#define _MR_TEST_FUNCTION_BODY(_MR_F_NAME, _MR_F_TAG) \
+#define _MR_TEST_FUNCTION_BODY(_MR_F_ID, _MR_F_TAG, _MR_F_NAME) \
 	do { \
 		_MR_FunctionType x; \
 		x.tag = (strdup(_MR_F_TAG)); \
-		x.name = (strdup(_MR_STR(_MR_F_NAME))); \
+		x.name = (strdup(_MR_F_ID)); \
 		x.function = (_MR_F_NAME); \
 		_MR_FunctionVectorPushback(&_MR_global_function_vector, x); \
 	} while (0);
 
-#define _MR_TEST_FUNCTION(id, tag, unique_name) \
+#define _MR_TEST_FUNCTION(id, tag, fname, unique_name) \
 			static void unique_name (void) __attribute__ ((constructor)); \
 			static void unique_name (void) \
-			{ _MR_TEST_FUNCTION_BODY(id, tag) }
+			{ _MR_TEST_FUNCTION_BODY(id, tag, fname) }
+
+#define _MR_TEST_CASE_ID(id, tag, fname) \
+		_MR_FUNCTION(fname); \
+		_MR_TEST_FUNCTION(id, tag, fname, _MR_UNIQUE_NAME(_MR_TestFunction)) \
+		_MR_FUNCTION(fname)
 
 /*
 Generates the TEST_CASE(unique_id) {}
@@ -160,10 +155,7 @@ Generates the TEST_CASE(unique_id) {}
 	- Returns a pointer and identifier to the previous function (id)
 3. prototype for main tester function, the braces after define the body
 */
-#define _MR_TEST_CASE(id, tag) \
-			_MR_FUNCTION(id); \
-			_MR_TEST_FUNCTION(id, _MR_STR(tag), _MR_UNIQUE_NAME(_MR_TestFunction)) \
-			_MR_FUNCTION(id)
+#define _MR_TEST_CASE(id, tag) _MR_TEST_CASE_ID(id, tag, _MR_UNIQUE_NAME(_MR_TestCase))
 
 #endif /* MR_TESTCASE_H */
 #ifndef MRTEST_H
@@ -180,7 +172,7 @@ extern _MR_FunctionVectorType* _MR_global_function_vector;
 #ifdef MRTEST_MAIN
 int _MR_executeTestCase(_MR_FunctionType* it);
 int _MR_shouldExecuteTag(int argc, char *argv[], char *tag);
-void printSuccessMessage(size_t num_testcases);
+void _MR_printEndMessage(size_t num_testcases, size_t num_failed);
 
 int main(int argc, char *argv[]) {
 	_MR_FunctionVectorType* v = _MR_global_function_vector;
@@ -192,15 +184,15 @@ int main(int argc, char *argv[]) {
 /* Skip program name */
 	--argc; ++argv;
 
-	int exit_status = 0;
 	size_t num_testcases = 0;
+	size_t num_failed = 0;
 /* Execute Testcases */
 	_MR_FunctionVectorIteratorType it = _MR_FunctionVectorGetIterator(v);
 	while (it.begin != it.end) {
 		if (_MR_shouldExecuteTag(argc, argv, it.begin->tag)) {
 			++num_testcases;
 			if (_MR_executeTestCase(it.begin) != 0) {
-				exit_status = 1;
+				++num_failed;
 			}
 		}
 		++it.begin;
@@ -208,10 +200,8 @@ int main(int argc, char *argv[]) {
 
 	_MR_FunctionVectorDestructor(v);
 
-	if (exit_status == 0) {
-		printSuccessMessage(num_testcases);
-	}
-	return exit_status;
+	_MR_printEndMessage(num_testcases, num_failed);
+	return num_failed == 0 ? 0 : 1;
 }
 #endif /* MRTEST_MAIN */
 
