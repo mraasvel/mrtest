@@ -22,6 +22,10 @@ Will return the key and value of NAME and FUNCTION_POINTER
 		_MR_FunctionType x; \
 		x.tag = (strdup(_MR_F_TAG)); \
 		x.name = (strdup(_MR_F_ID)); \
+		if (!x.tag || !x.name) { \
+			perror("mrtest: malloc"); \
+			exit(EXIT_FAILURE); \
+		} \
 		x.function = (_MR_F_NAME); \
 		_MR_FunctionVectorPushback(&_MR_global_function_vector, x); \
 	} while (0);
