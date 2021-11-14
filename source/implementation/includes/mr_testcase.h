@@ -17,12 +17,16 @@ Function body of the dynamic test function
 
 Will return the key and value of NAME and FUNCTION_POINTER
 */
-#define _MR_TEST_FUNCTION_BODY(_MR_F_ID, _MR_F_TAG, _MR_F_NAME) \
+#define _MR_TEST_FUNCTION_BODY(function_id, function_tag, function_name) \
 	do { \
 		_MR_FunctionType x; \
-		x.tag = (strdup(_MR_F_TAG)); \
-		x.name = (strdup(_MR_F_ID)); \
-		x.function = (_MR_F_NAME); \
+		x.name = (strdup(function_id)); \
+		x.tag = (strdup(function_tag)); \
+		if (!x.tag || !x.name) { \
+			perror("mrtest: malloc"); \
+			exit(EXIT_FAILURE); \
+		} \
+		x.function = (function_name); \
 		_MR_FunctionVectorPushback(&_MR_global_function_vector, x); \
 	} while (0);
 

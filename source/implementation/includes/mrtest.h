@@ -13,9 +13,9 @@
 extern _MR_FunctionVectorType* _MR_global_function_vector;
 
 #ifdef MRTEST_MAIN
-int _MR_executeTestCase(_MR_FunctionType* it);
-int _MR_shouldExecuteTag(int argc, char *argv[], char *tag);
-void _MR_printEndMessage(size_t num_testcases, size_t num_failed);
+int _MR_ExecuteTestCase(_MR_FunctionType* it);
+int _MR_ShouldExecuteTag(int argc, char *argv[], char *tag);
+void _MR_PrintEndMessage(size_t num_testcases, size_t num_failed);
 
 int main(int argc, char *argv[]) {
 	_MR_FunctionVectorType* v = _MR_global_function_vector;
@@ -32,9 +32,9 @@ int main(int argc, char *argv[]) {
 /* Execute Testcases */
 	_MR_FunctionVectorIteratorType it = _MR_FunctionVectorGetIterator(v);
 	while (it.begin != it.end) {
-		if (_MR_shouldExecuteTag(argc, argv, it.begin->tag)) {
+		if (_MR_ShouldExecuteTag(argc, argv, it.begin->tag)) {
 			++num_testcases;
-			if (_MR_executeTestCase(it.begin) != 0) {
+			if (_MR_ExecuteTestCase(it.begin) != 0) {
 				++num_failed;
 			}
 		}
@@ -43,7 +43,7 @@ int main(int argc, char *argv[]) {
 
 	_MR_FunctionVectorDestructor(v);
 
-	_MR_printEndMessage(num_testcases, num_failed);
+	_MR_PrintEndMessage(num_testcases, num_failed);
 	return num_failed == 0 ? 0 : 1;
 }
 #endif /* MRTEST_MAIN */
