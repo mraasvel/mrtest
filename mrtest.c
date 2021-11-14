@@ -1,10 +1,10 @@
-#include "mrtest.h"
-#include <stdlib.h>
 #include <stdio.h>
-#include <assert.h>
 #include <string.h>
-#include <unistd.h>
+#include <stdlib.h>
 #include <sys/wait.h>
+#include <assert.h>
+#include <unistd.h>
+#include "mrtest.h"
 
 _MR_FunctionVectorType* _MR_FunctionVectorConstructor(size_t initial_capacity) {
 
@@ -92,7 +92,7 @@ _MR_FunctionVectorIteratorType _MR_FunctionVectorGetIterator(_MR_FunctionVectorT
 
 _MR_FunctionVectorType* _MR_global_function_vector = NULL;
 
-static int _MR_numLen(size_t n) {
+static int _MR_NumLen(size_t n) {
 	int i = 1;
 	while (n >= 10) {
 		++i;
@@ -101,7 +101,7 @@ static int _MR_numLen(size_t n) {
 	return i;
 }
 
-static void _MR_printSign(int num_digits, const char* color) {
+static void _MR_PrintSign(int num_digits, const char* color) {
 	printf("%s", color);
 	for (int i = 0; i < num_digits; ++i) {
 		printf("=");
@@ -109,44 +109,44 @@ static void _MR_printSign(int num_digits, const char* color) {
 	printf(_MR_RESET_COLOR "\n");
 }
 
-static void _MR_printSuccessMessage(size_t num_testcases) {
-	int num_digits = _MR_numLen(num_testcases);
+static void _MR_PrintSuccessMessage(size_t num_testcases) {
+	int num_digits = _MR_NumLen(num_testcases);
 
 	printf(_MR_GREEN_BOLD "=========================================");
-	_MR_printSign(num_digits, _MR_GREEN_BOLD);
+	_MR_PrintSign(num_digits, _MR_GREEN_BOLD);
 	printf(_MR_GREEN_BOLD "=======" _MR_RESET_COLOR
 	" Passed [%lu] total TestCases " 
 	_MR_GREEN_BOLD "=======" _MR_RESET_COLOR "\n", num_testcases);
 	printf(_MR_GREEN_BOLD "=========================================");
-	_MR_printSign(num_digits, _MR_GREEN_BOLD);
+	_MR_PrintSign(num_digits, _MR_GREEN_BOLD);
 }
 
-static void _MR_printFailMessage(size_t num_testcases, size_t num_failed) {
-	size_t num_signs = _MR_numLen(num_testcases) + _MR_numLen(num_failed);
+static void _MR_PrintFailMessage(size_t num_testcases, size_t num_failed) {
+	size_t num_signs = _MR_NumLen(num_testcases) + _MR_NumLen(num_failed);
 
 	printf(_MR_RED_BOLD "===============================================");
-	_MR_printSign(num_signs, _MR_RED_BOLD);
+	_MR_PrintSign(num_signs, _MR_RED_BOLD);
 
 	printf(_MR_RED_BOLD "=======" _MR_RESET_COLOR
 		" Failed [%lu] of [%lu] total TestCases "
 		_MR_RED_BOLD "=======" _MR_RESET_COLOR "\n", num_failed, num_testcases);
 
 	printf(_MR_RED_BOLD "===============================================");
-	_MR_printSign(num_signs, _MR_RED_BOLD);
+	_MR_PrintSign(num_signs, _MR_RED_BOLD);
 }
 
-void _MR_printEndMessage(size_t num_testcases, size_t num_failed) {
+void _MR_PrintEndMessage(size_t num_testcases, size_t num_failed) {
 	printf("\n");
 	if (num_failed == 0) {
-		_MR_printSuccessMessage(num_testcases);
+		_MR_PrintSuccessMessage(num_testcases);
 	} else {
-		_MR_printFailMessage(num_testcases, num_failed);
+		_MR_PrintFailMessage(num_testcases, num_failed);
 	}
 	printf("\n");
 }
 
 /* Return true if tag should be executed */
-int _MR_shouldExecuteTag(int argc, char *argv[], char *tag)
+int _MR_ShouldExecuteTag(int argc, char *argv[], char *tag)
 {
 	if (argc == 0) {
 		return 1;
@@ -161,7 +161,7 @@ int _MR_shouldExecuteTag(int argc, char *argv[], char *tag)
 	return 0;
 }
 
-static const char* _MR_SIGNAL_NAME(int signal) {
+static const char* _MR_GetSignalName(int signal) {
 	static const char* signals[] = {
 		[SIGABRT] = "SIGABRT",
 		[SIGALRM] = "SIGALRM",
@@ -194,10 +194,16 @@ static const char* _MR_SIGNAL_NAME(int signal) {
 		[SIGWINCH] = "SIGWINCH"
 	};
 
+	if (signal > (int)(sizeof(signals) / sizeof(signals[0]))
+		|| signals[signal] == NULL) {
+		// String literals have static storage duration
+		return "???";
+	}
+
 	return signals[signal];
 }
 
-int _MR_executeTestCase(_MR_FunctionType* it) {
+int _MR_ExecuteTestCase(_MR_FunctionType* it) {
 	pid_t pid = fork();
 	if (pid == -1) {
 		perror("fork");
@@ -220,7 +226,7 @@ int _MR_executeTestCase(_MR_FunctionType* it) {
 		}
 	} else if (WIFSIGNALED(status)) {
 		fprintf(stderr, "%s: CRASH: [" _MR_RED_BOLD "%s" _MR_RESET_COLOR "]\r\n",
-			it->name, _MR_SIGNAL_NAME(WTERMSIG(status)));
+			it->name, _MR_GetSignalName(WTERMSIG(status)));
 		return -1;
 	}
 
